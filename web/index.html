@@ -1,0 +1,83 @@
+<!--
+ * @author: Archy
+ * @Date: 2022-12-10 22:14:31
+ * @LastEditors: Archy
+ * @LastEditTime: 2022-12-10 23:46:00
+ * @FilePath: \chatGPT\server\web\index.html
+ * @description: 
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/element-plus/dist/index.css" />
+  <title>ChatGPT</title>
+</head>
+
+<body>
+  <script src="//cdn.jsdelivr.net/npm/vue@3"></script>
+  <script src="//cdn.jsdelivr.net/npm/element-plus"></script>
+  <script src="//cdn.jsdelivr.net/npm/@element-plus/icons-vue"></script>
+  <div id="app">
+    <h1>ChatGPT</h1>
+    <div v-for="(item,index) in FAQ">
+      <el-input v-model="item.question" placeholder="Please input" @keyup.enter="enter(index)">
+        <template #append>
+          <el-button :icon="ElementPlusIconsVue.Search" @click="click(index)" />
+        </template>
+      </el-input>
+      <template v-if="item.answer">
+        <el-input type="textarea" autosize v-model="item.answer" disabled
+          :style="{marginTop:'12px',marginBottom:'12px'}">
+        </el-input>
+      </template>
+    </div>
+  </div>
+  <script>
+    const App = {
+      data() {
+        return {
+          ElementPlusIconsVue,
+          FAQ: [{
+            question: '',
+          }]
+        };
+      },
+      methods: {
+        enter(index) {
+          this.click(index)
+        },
+        click(index) {
+          const loading = ElementPlus.ElLoading.service({ fullsceen: true, text: '思考中' })
+          fetch('http://localhost:8877/question', {
+            method: 'post',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ question: this.FAQ[index].question })
+          }).then(async res => {
+            const _res = await res.json()
+            if (_res.status) {
+              this.FAQ[index].answer = _res.data
+            } else {
+              this.FAQ[index].answer = _res.msg
+            }
+          }).then(() => {
+            this.FAQ.push({ question: '' })
+          }).finally(() => {
+            loading.close()
+          })
+        }
+      }
+    };
+    const app = Vue.createApp(App);
+    app.use(ElementPlus);
+    app.mount("#app");
+  </script>
+
+</body>
+
+</html>
