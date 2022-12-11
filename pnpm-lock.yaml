@@ -9,7 +9,6 @@ specifiers:
   http-errors: ~1.6.3
   jade: ~1.11.0
   morgan: ~1.9.1
-  ws: ^8.11.0
 
 dependencies:
   chatgpt: 2.0.5
@@ -20,7 +19,6 @@ dependencies:
   http-errors: 1.6.3
   jade: 1.11.0
   morgan: 1.9.1
-  ws: 8.11.0
 
 packages:
 
@@ -1179,19 +1177,6 @@ packages:
   /wordwrap/0.0.3:
     resolution: {integrity: sha1-o9XabNXAvAAI03I0u68b7WMFkQc=}
     engines: {node: '>=0.4.0'}
-    dev: false
-
-  /ws/8.11.0:
-    resolution: {integrity: sha512-HPG3wQd9sNQoT9xHyNCXoDUa+Xw/VevmY9FoHyQ+g+rrMn4j6FB4np7Z0OhdTgjx6MgQLK7jwSy1YecU1+4Asg==}
-    engines: {node: '>=10.0.0'}
-    peerDependencies:
-      bufferutil: ^4.0.1
-      utf-8-validate: ^5.0.2
-    peerDependenciesMeta:
-      bufferutil:
-        optional: true
-      utf-8-validate:
-        optional: true
     dev: false
 
   /yargs/3.10.0:

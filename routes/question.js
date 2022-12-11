@@ -2,32 +2,37 @@
  * @author: Archy
  * @Date: 2022-12-10 22:04:40
  * @LastEditors: Archy
- * @LastEditTime: 2022-12-10 23:59:05
+ * @LastEditTime: 2022-12-11 21:43:18
  * @FilePath: \chatGPT\server\routes\question.js
  * @description:
  */
 var express = require('express')
 var router = express.Router()
 
+let question = ''
 /* GET users listing. */
-router.post('/', async function (req, res, next) {
-  const body = req.body
-  console.log(req.wss)
+router.post('/', function (req, res, next) {
+  question = req.body.question
+  res.send({
+    status: 1,
+    msg: '提问成功',
+  })
+})
+
+router.get('/', async function (req, res, next) {
   try {
-    await req.chatGptApi.sendMessage(body.question, {
+    res.writeHead(200, { 'Content-Type': 'text/event-stream' })
+    const answer = await req.conversition.sendMessage(question, {
       onProgress: (answer) => {
-        res.send({
-          status: 1,
-          msg: 'success',
-          data: answer,
-        })
+        res.write('event:message\n')
+        res.write('data: ' + answer + '\n\n')
       },
     })
+    res.write('event:close\n')
+    res.write('data: ' + answer + '\n\n')
   } catch (err) {
-    res.send({
-      status: 0,
-      msg: err.toString(),
-    })
+    res.write('event:error\n')
+    res.write('data: ' + err.toString() + '\n\n')
   }
 })
 

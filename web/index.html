@@ -2,7 +2,7 @@
  * @author: Archy
  * @Date: 2022-12-10 22:14:31
  * @LastEditors: Archy
- * @LastEditTime: 2022-12-10 23:46:00
+ * @LastEditTime: 2022-12-11 21:43:08
  * @FilePath: \chatGPT\server\web\index.html
  * @description: 
 -->
@@ -30,7 +30,7 @@
         </template>
       </el-input>
       <template v-if="item.answer">
-        <el-input type="textarea" autosize v-model="item.answer" disabled
+        <el-input type="textarea" autosize v-model="item.answer" readonly
           :style="{marginTop:'12px',marginBottom:'12px'}">
         </el-input>
       </template>
@@ -50,8 +50,10 @@
         enter(index) {
           this.click(index)
         },
+
         click(index) {
           const loading = ElementPlus.ElLoading.service({ fullsceen: true, text: '思考中' })
+
           fetch('http://localhost:8877/question', {
             method: 'post',
             headers: {
@@ -61,15 +63,29 @@
           }).then(async res => {
             const _res = await res.json()
             if (_res.status) {
-              this.FAQ[index].answer = _res.data
-            } else {
-              this.FAQ[index].answer = _res.msg
+              return true
             }
           }).then(() => {
-            this.FAQ.push({ question: '' })
-          }).finally(() => {
+            const es = new EventSource('http://localhost:8877/question')
+            es.addEventListener('message', (e) => {
+              loading.close()
+              this.FAQ[index].answer = e.data
+            }, false)
+            es.addEventListener('error', (e) => {
+              ElementPlus.ElMessage({
+                message: e.data,
+                type: 'error'
+              })
+              loading.close()
+            }, false)
+            es.addEventListener('close', (e) => {
+              this.FAQ.push({ question: '' })
+            }, false)
+          }).catch(() => {
             loading.close()
           })
+
+
         }
       }
     };

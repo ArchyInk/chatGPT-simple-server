@@ -13,7 +13,6 @@
     "http": "0.0.1-security",
     "http-errors": "~1.6.3",
     "jade": "~1.11.0",
-    "morgan": "~1.9.1",
-    "ws": "^8.11.0"
+    "morgan": "~1.9.1"
   }
 }
